@@ -1,0 +1,31 @@
+{
+  "name": "SenseIt",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Visualize any HTML table on the web using Qlik Sense Desktop",
+  "homepage_url": "http://extensionizr.com",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+   "background": {
+      "page": "background.html"
+   },
+  "browser_action": {
+    "default_icon": "icons/icon19.png"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "http://localhost:4848/",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "web_accessible_resources": [
+    "css/styles.css",
+    "icons/loader.svg",
+    "icons/sad_panda.jpg",
+    "icons/bg.png"
+  ]
+}
