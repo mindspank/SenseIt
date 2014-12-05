@@ -1,6 +1,10 @@
 var tw = (function() {
 
-	var table = {};
+	var table = {
+		labels: true,
+		decimal: '.',
+		thousand: ','
+	};
 
 	var port,
 		$l,
@@ -16,6 +20,11 @@ var tw = (function() {
 	var CONTAINER_TEMPLATE = '<div class="droparea-container"><div class="droparea nodrop"><p>Drag & Drop any table to visualize it</p>'
 	CONTAINER_TEMPLATE += '</div></div>';
 
+	var SETTINGS_TEMPLATE = '<div id="settings">';
+	SETTINGS_TEMPLATE += '<div class="setting"><p>Column headers</p><select class="row-heading"><option value="0">First row</option><option value="1">No headers</option></select></div>'
+	SETTINGS_TEMPLATE += '<div class="setting"><p>Decimal sep.</p><select class="dec-sep"><option value="0">Dot ( . )</option><option value="1">Comma ( , )</option><option value="2">Space (  )</option></select></div>'
+	SETTINGS_TEMPLATE += '<div class="setting"><p>Thousand sep.</p><select class="thou-sep"><option value="0">Comma ( , )</option><option value="1">Space (   )</option><option value="2">Dot ( . )</option><option value="3">None</option></select></div>'
+	SETTINGS_TEMPLATE += '</div>'
 
 	function addStyles() {
 		$('head').append($('<link>')
@@ -75,6 +84,7 @@ var tw = (function() {
 						$el.find('tr:first').addClass('header-row')
 					}
 
+
 					$('#tw-container').width('100%')
 
 					var $drop = $(this);
@@ -82,6 +92,9 @@ var tw = (function() {
 					$drop.removeClass('nodrop')
 					$drop.empty();
 					$drop.append($el);
+
+					//TODO: Add support for removing columns and changing field names
+					//$('.header-row').prepend('<input type="checkbox" checked class="column-checkbox">')
 
 					setupButton();
 
@@ -93,12 +106,62 @@ var tw = (function() {
 					return;
 				};
 
-				$('#tw-container').height(550).append('<div id="settings"></div><div id="tw-footer"><button id="tw-create"><span>Waiting for data</span></button></div>')
-
+				$('#tw-container').height(550).append(SETTINGS_TEMPLATE + '<div id="tw-footer"><button id="tw-create">Create App</button></div>');
 				buttonInitilized = true;
 
-				$('#tw-create').text('Create App');
-				$('#tw-create').toggleClass('active');
+				$('.setting .row-heading').on('change', function(event) {
+					event.preventDefault();
+
+					if( $(this).val() == 1 ) {
+						table.labels = false;
+						var $headerrow = $('.droparea').find('tr:first');
+						var $firstrow = $headerrow.clone();
+
+						$headerrow.find('th, td').each(function(index, val) {
+							$(this).text('@' + (index + 1));
+						})
+
+						$firstrow.find('th, td').removeClass('header-row').addClass('demoted-header');
+						$headerrow.after($firstrow);
+					} else {
+						table.labels = true;
+						$('.droparea').find('tr:first').html($('.demoted-header'));
+						$('.demoted-header').removeClass('demoted-header').addClass('header-row');
+					}
+				});
+
+				$('.setting .dec-sep').on('change', function(event) {
+					var value = $(this).val();
+					switch (value) {
+						case '0':
+							table.decimal = '.';
+							break;
+						case '1':
+							table.decimal = ',';
+							break;
+						case '2':
+							table.decimal = ' ';
+							break;
+					};
+				})
+
+				$('.setting .thou-sep').on('change', function(event) {
+					var value = $(this).val();
+					switch (value) {
+						case '0':
+							table.thousand = ',';
+							break;
+						case '1':
+							table.thousand = ' ';
+							break;
+						case '2':
+							table.thousand = '.';
+							break;
+						case '3':
+							table.thousand = '';
+							break;
+					};
+				})
 
 				$('#tw-create').on('click', function(event) {
 					event.preventDefault();
@@ -106,9 +169,12 @@ var tw = (function() {
 						action: "createApp",
 						info: {
 							tableidx: table.index,
-							header: false
+							header: table.labels,
+							decimal: table.decimal,
+							thousand: table.thousand
 						}
 					})
+					$(this).html('<img src="' + SPINNERURL + '" alt="">');
 					$(this).off(event);
 				});
 			};
@@ -117,7 +183,7 @@ var tw = (function() {
 	};
 
 	function appCreated(info) {
-		$('#tw-create').text('Open App')
+		$('#tw-create').empty().text('Open App')
 		$('#tw-create').on('click', function(event) {
 			window.open('http://localhost:4848/sense/app/' + info.appname);
 		});

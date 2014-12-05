@@ -76,7 +76,9 @@ chrome.runtime.onConnect.addListener(function(port) {
 			qType: 'internet'
 		};
 
-		loadscript = 'Load * from [lib://' + app.host + '] (html, UTF8, embedded labels, table is @' + msg.tableidx + ');';
+		var hasLabels = msg.header === true ? 'embedded labels': 'no labels';
+
+		loadscript = "SET ThousandSep='" + msg.thousand + "';\r\nSET DecimalSep='"+ msg.decimal +"';\r\nLoad * from [lib://" + app.host + "] (html, UTF8, " + hasLabels + ", table is @" + msg.tableidx + ");";
 
 		createAndOpen(glob, appname)
 			.then(createConnection)
