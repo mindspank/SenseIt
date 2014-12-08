@@ -40,7 +40,8 @@ var tw = (function() {
 
 	function toggleHighlight() {
 		$tables.toggleClass('tw-highlight-table');
-		$tables.draggable({
+		$('table:visible', 'table').toggleClass('tw-highlight-table');
+		$('.tw-highlight-table').draggable({
 			helper: 'clone',
 			appendTo: "body",
 			zIndex: 10000,
@@ -76,11 +77,15 @@ var tw = (function() {
 					$el.removeClass();
 					$el.find('*').removeClass();
 
+					//Check for nested tables
+					if( $el.find('table').length ) {
+						var $el = $el.find('table');
+					};
+
+					//Using th or td for header row
 					if( $el.find('th').length ) {
-						var header = $el.find('th');
-						$el.find('th').addClass('header-row')
+						$el.find('tr:first th').addClass('header-row')
 					} else {
-						var header = $el.find('tr:first');
 						$el.find('tr:first').addClass('header-row')
 					}
 
