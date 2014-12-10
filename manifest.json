@@ -1,6 +1,6 @@
 {
   "name": "SenseIt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "manifest_version": 2,
   "description": "Visualize any HTML table on the web using Qlik Sense Desktop",
   "homepage_url": "https://github.com/mindspank/SenseIt",

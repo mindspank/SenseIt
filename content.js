@@ -228,7 +228,12 @@ var tw = (function() {
 	};
 
 	function setDefaultSettings() {
-		chrome.storage.sync.get(function(items) {
+		chrome.storage.sync.get({
+			decimal: 0,
+			thousand: 0,
+			useServer: false,
+			url: ''
+		}, function(items) {
 			$('.dec-sep').val(+items.decimal);
 			$('.thou-sep').val(+items.thousand);
 			useServer = items.useServer;
