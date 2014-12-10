@@ -154,7 +154,7 @@
     border-collapse: collapse;
     border-spacing: 0;
 
-    td {
+    td, tbody th {
         border: @table-border;
         padding: 1px 4px;
     }
@@ -172,6 +172,7 @@
         color: @font-color;
         max-width: 180px;
         white-space: nowrap;
+        text-align: left;
         a {
             color: inherit;
             text-decoration: none;
@@ -334,13 +335,14 @@ button#tw-create {
 
     .setting {
         float: left;
-        width: 33%;
+        width: 25%;
         font-family: @font-family;
         p {
             font-size: 12px;
             margin: 20px 0 0px 0;
             width: 100%;
             font-family: @font-family;
+            text-align: left;
         }
         select {
             vertical-align: middle;

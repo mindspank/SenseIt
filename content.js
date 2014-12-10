@@ -3,16 +3,18 @@ var tw = (function() {
 	var table = {
 		labels: true,
 		decimal: '.',
-		thousand: ','
+		thousand: ',',
+		transpose: false
 	};
 
 	var port,
-		$l,
-		$tables = $('table:visible'),
+		$tables = $('table'),
 		CSSURL = chrome.extension.getURL('css/styles.css'),
 		SPINNERURL = chrome.extension.getURL('icons/loader.svg'),
 		PANDAURL = chrome.extension.getURL('icons/sad_panda.jpg'),
-		BGURL = chrome.extension.getURL('icons/bg.png');
+		BGURL = chrome.extension.getURL('icons/bg.png'),
+		useServer = false,
+		serverUrl;
 
 	var CONTAINER_WRAPPER = '<div id="tw-container" style="position: fixed;z-index:9999"><div id="tw-header"><div id="tw-heading"><p>SenseIt - Visualize the Web</p>'
 	CONTAINER_WRAPPER += '</div></div><div class="tw-spinner"><img src="' + SPINNERURL + '" alt=""></div></div>'
@@ -24,7 +26,8 @@ var tw = (function() {
 	SETTINGS_TEMPLATE += '<div class="setting"><p>Column headers</p><select class="row-heading"><option value="0">First row</option><option value="1">No headers</option></select></div>'
 	SETTINGS_TEMPLATE += '<div class="setting"><p>Decimal sep.</p><select class="dec-sep"><option value="0">Dot ( . )</option><option value="1">Comma ( , )</option><option value="2">Space (  )</option></select></div>'
 	SETTINGS_TEMPLATE += '<div class="setting"><p>Thousand sep.</p><select class="thou-sep"><option value="0">Comma ( , )</option><option value="1">Space (   )</option><option value="2">Dot ( . )</option><option value="3">None</option></select></div>'
-	SETTINGS_TEMPLATE += '</div>'
+	SETTINGS_TEMPLATE += '<div class="setting"><p>Transpose data</p><select class="transpose"><option value="0">No</option><option value="1">Yes</option></select></div>'
+	SETTINGS_TEMPLATE += '</div>';
 
 	function addStyles() {
 		$('head').append($('<link>')
@@ -70,7 +73,7 @@ var tw = (function() {
 				tolerance: 'pointer',
 				drop: function(event, ui) {
 
-					table.index = $('table:visible').index($(ui.draggable)) + 1;
+					table.index = $('table').index($(ui.draggable)) + 1;
 
 					var $el = $(ui.draggable).clone();
 					$el.id = 'tw-tempId'
@@ -81,6 +84,9 @@ var tw = (function() {
 					if( $el.find('table').length ) {
 						var $el = $el.find('table');
 					};
+
+					//Remove elements
+					$el.find('caption, tfoot').remove();
 
 					//Using th or td for header row
 					if( $el.find('th').length ) {
@@ -112,6 +118,7 @@ var tw = (function() {
 				};
 
 				$('#tw-container').height(550).append(SETTINGS_TEMPLATE + '<div id="tw-footer"><button id="tw-create">Create App</button></div>');
+				setDefaultSettings();
 				buttonInitilized = true;
 
 				$('.setting .row-heading').on('change', function(event) {
@@ -168,6 +175,10 @@ var tw = (function() {
 					};
 				})
 
+				$('.setting .transpose').on('change', function(event) {
+					table.transpose = ($(this).val() == '1' ? true : false);
+				});
+
 				$('#tw-create').on('click', function(event) {
 					event.preventDefault();
 					port.postMessage({
@@ -176,7 +187,8 @@ var tw = (function() {
 							tableidx: table.index,
 							header: table.labels,
 							decimal: table.decimal,
-							thousand: table.thousand
+							thousand: table.thousand,
+							transpose: table.transpose
 						}
 					})
 					$(this).html('<img src="' + SPINNERURL + '" alt="">');
@@ -187,10 +199,24 @@ var tw = (function() {
 		});
 	};
 
+	function unwrap(elem) {
+		while(elem.length) {
+			var parent = elem[ 0 ].parentNode;
+			while( elem[ 0 ].firstChild ) {
+				parent.insertBefore(  elem[ 0 ].firstChild, elem[ 0 ] );
+			}
+			parent.removeChild( elem[ 0 ] );
+		}
+	}
+
 	function appCreated(info) {
 		$('#tw-create').empty().text('Open App')
 		$('#tw-create').on('click', function(event) {
-			window.open('http://localhost:4848/sense/app/' + info.appname);
+			if( useServer === false) {
+				window.open('http://localhost:4848/sense/app/' + info.appname);
+			} else {
+				window.open(serverUrl + 'sense/app/' + info.appname);
+			}
 		});
 	}
 
@@ -198,6 +224,15 @@ var tw = (function() {
 		var timer = timer || 800;
 		$('.tw-spinner').fadeOut(timer, function() {
 			$('#tw-container').append('<h1 class="error">Oops!</h1><p class="error">' + reason + '</p><img class="error" src="' + PANDAURL + '">');
+		});
+	};
+
+	function setDefaultSettings() {
+		chrome.storage.sync.get(function(items) {
+			$('.dec-sep').val(+items.decimal);
+			$('.thou-sep').val(+items.thousand);
+			useServer = items.useServer;
+			serverUrl = items.url;
 		});
 	};
 

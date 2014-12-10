@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SenseIt - Options</title>
+	<link rel=stylesheet href="https://code.cdn.mozilla.net/fonts/fira.css">
+	<link rel=stylesheet href="css/options.css">
+</head>
+<body>
+
+	<h1>SenseIt - Settings</h1>
+
+	<div class="setting">
+		<h3>Use Qlik Sense Server</h3>
+		<p>If you have a license for Qlik Sense Server and the ability to create and reload apps then you can choose to use the Server version instead of Qlik Sense Desktop.</p>
+		<p>Server address should be http(s)://senseserver/(virtual proxy/)</p>
+		<label for="useServer">Enable
+			<input id="useServer" type="checkbox">
+		</label>
+		<input id="url" type="url" placeholder="Server adress">
+	</div>
+
+	<div class="setting data">
+		<h3>Data Default Settings</h3>
+		<p>Change the default settings for data. Don't worry, you can always change the settings per website.</p>
+		<label for="decimal">Decimal Seperator
+			<select id="decimal">
+				<option value="0">Dot (.)</option>
+				<option value="1">Comma (,)</option>
+				<option value="2">Space ( )</option>
+			</select>
+		</label>
+		<label for="thousand">Thousand Seperator
+		<select id="thousand">
+			<option value="0">Comma (,)</option>
+			<option value="1">Space ( )</option>
+			<option value="2">Dot (.)</option>
+			<option value="3">None</option>
+		</select>
+		</label>
+	</div>
+	<button id="save">Save</button>
+	<script src="options.js"></script>
+</body>
+</html>

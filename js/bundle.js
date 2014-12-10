@@ -608,8 +608,8 @@ Doc.prototype.getDirectoryListing = function(Connection, RelativePath, Path) {
 Doc.prototype.canCreateConnection = function() {
     return this.connection.ask(this.handle, 'CanCreateConnection', arguments);
 };
-Doc.prototype.getConnectionLib = function() {
-    return this.connection.ask(this.handle, 'GetConnectionLib', arguments).then(function(msg) {
+Doc.prototype.getConnections = function() {
+    return this.connection.ask(this.handle, 'GetConnections', arguments).then(function(msg) {
         return msg.qConnections;
     });
 };
@@ -1142,6 +1142,7 @@ function Connect(config) {
 		cfg.error = function(msg) {
 			reject(msg);
 		};
+
 		new Connection(cfg);
 	});
 };
