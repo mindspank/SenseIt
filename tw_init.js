@@ -1,14 +1,4 @@
-// For todays date
-Date.prototype.today = function () {
-    return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) +"/"+ this.getFullYear();
-}
-
-// For the time now
-Date.prototype.timeNow = function () {
-     return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
-}
-
-var settings, serverappname, appinfo;
+var settings, appinfo;
 
 chrome.storage.sync.get({
 	decimal: 0,
@@ -43,7 +33,8 @@ chrome.runtime.onConnect.addListener(function(port) {
 		app,
 		counter = 0,
 		connection,
-		loadscript;
+		loadscript,
+		serverappname;
 
 	port.onMessage.addListener(function(msg) {
 		if (msg.action === 'init') {
@@ -170,10 +161,14 @@ chrome.runtime.onConnect.addListener(function(port) {
 					if(reply.qSuccess === false) {
 						return reject('Could not create app');
 					}
+
+					//store away app id to send back to content script
 					serverappname = reply.qAppId;
+
 					glob.openDoc(reply.qAppId).then(function(handle) {
 						return resolve(handle)
 					}, function(error) {
+						//If app already is opened
 						if(error.code === 1002) {
 							glob.getActiveDoc().then(function(handle) {
 								return resolve(handle)
@@ -237,16 +232,5 @@ chrome.runtime.onConnect.addListener(function(port) {
 			})
 		})
 	};
-
-	function retryConnection(handle, resolve) {
-		counter++;
-		connection.qName = app.host + counter;
-		console.log(connection)
-		handle.createConnection(connection).then(function(reply) {
-			return resolve(handle)
-		}, function(error) {
-			newConnection();
-		});
-	}
 
 });
