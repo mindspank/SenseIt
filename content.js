@@ -279,7 +279,7 @@ var tw = (function() {
 			port.postMessage({
 				action: "init",
 				info: {
-					host: location.host,
+					host: location.hostname,
 					url: location.href,
 					noTables: $('table:visible').length
 				}
