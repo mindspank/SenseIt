@@ -1,4 +1,4 @@
-var tw = (function() {
+var tw = (function($) {
 
 	var table = {
 		labels: true,
@@ -73,8 +73,8 @@ var tw = (function() {
 				tolerance: 'pointer',
 				drop: function(event, ui) {
 
-					table.index = $('table').index($(ui.draggable)) + 1;
-
+					table.index = $('table:visible').index($(ui.draggable)) + 1;
+                    console.log( $('table:visible') )
 					var $el = $(ui.draggable).clone();
 					$el.id = 'tw-tempId'
 					$el.removeClass();
@@ -291,6 +291,6 @@ var tw = (function() {
 		init: init
 	};
 
-})();
+})(jQuery);
 
 tw.init();

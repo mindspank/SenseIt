@@ -17,7 +17,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 
 chrome.browserAction.onClicked.addListener(function(tab) {
 	chrome.tabs.executeScript(tab.id, {
-		"file": "js/jquery-2.1.1.min.js",
+		"file": "js/jquery-2.2.1.min.js",
 		"runAt": "document_end"
 	}, function() {
 		chrome.tabs.executeScript(tab.id, {
